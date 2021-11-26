@@ -5,6 +5,7 @@ Live Website Link:-
 ### Feature of this Applicaion
 
 * Server Intregation
+* Rest Api Used
 
 ### Technology Used
 
