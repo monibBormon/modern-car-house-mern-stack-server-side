@@ -27,8 +27,20 @@ async function run() {
 
         // get all products from db
         app.get('/products', async (req, res) => {
-            const result = await carCollection.find().toArray()
-            res.json(result)
+            const page = req.query.page;
+            const size = parseInt(req.query.size);
+            let result;
+            const count = await carCollection.find({}).count()
+            if (page) {
+                result = await carCollection.find({}).skip(page * size).limit(size).toArray();
+            } else {
+                result = await carCollection.find().toArray()
+            }
+
+            res.json({
+                count,
+                result
+            })
         })
         // get single product
         app.get('/products/:id', async (req, res) => {
