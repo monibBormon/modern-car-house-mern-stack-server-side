@@ -1,6 +1,7 @@
 const express = require('express')
 const { MongoClient } = require('mongodb');
-const cors = require('cors')
+const cors = require('cors');
+const { default: mongoose } = require('mongoose');
 const ObjectId = require('mongodb').ObjectId
 require('dotenv').config()
 const stripe = require('stripe')(process.env.STRIPE_SECRET)
@@ -16,6 +17,20 @@ app.use(express.json())
 // database 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dejzn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+mongoose.set("strictQuery", false);
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(uri)
+        console.log(`MongoDB connected:  ${conn.connection.host}`);
+    } catch (error) {
+        console.log(error);
+        process.exit(1)
+    }
+}
+
+
+
 
 async function run() {
     try {
@@ -184,6 +199,9 @@ run().catch(console.dir)
 app.get('/', (req, res) => {
     res.send('MCH server is running.')
 })
-app.listen(port, () => {
-    console.log('Port running at', port)
+
+connectDB().then(() => {
+    app.listen(port, () => {
+        console.log('Port running at', port)
+    })
 })
